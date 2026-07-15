@@ -31,5 +31,8 @@ jobs:
       - name: Check TypeScript
         run: npm run typecheck
 
+      - name: Run cloud-independent unit tests
+        run: npm run test:unit
+
       - name: Build and test server output
         run: npm test

@@ -6,14 +6,17 @@ This repository is a staged TypeScript and AWS rebuild of a 2024 classroom proje
 
 ## Current stage
 
-**Stage 1: typed product foundation**
+**Stage 2: owner-scoped upload foundation**
 
 - Responsive portfolio and product shell in TypeScript and React.
 - Student/faculty experience switch with realistic workspace states.
 - Architecture and decision records for the AWS migration.
 - Environment-variable contract, strict TypeScript, linting, server-render test, and CI workflow.
+- Runtime-validated upload contracts, processing-state transitions, and DynamoDB key builders.
+- An owner-scoped upload use case with injectable database and object-storage ports.
+- Unit tests for authentication, validation, isolation, presigned-upload constraints, and failure compensation.
 
-The interface currently uses representative data. DynamoDB, S3 uploads, Amazon Transcribe, and Amazon Bedrock are introduced in subsequent vertical slices.
+The interface currently uses representative data. The upload domain is implemented and tested without cloud dependencies; the next adapter commit wires it to DynamoDB, S3, Cognito, API Gateway, and TypeScript CDK.
 
 ## Target architecture
 
@@ -56,6 +59,8 @@ npm test
 ```text
 app/                    Product interface
 docs/                   Architecture and decisions
+packages/contracts/     Shared runtime validation and domain types
+services/upload-api/    Cloud-independent upload application logic
 tests/                  Server-rendered behavior checks
 .github/workflows/      Continuous integration
 ```
