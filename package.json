@@ -14,7 +14,7 @@
     "infra:synth": "cdk synth",
     "infra:diff": "cdk diff",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint app build infra packages services tests worker eslint.config.mjs next.config.ts postcss.config.mjs vite.config.ts"
+    "lint": "eslint app site-build infra packages services tests worker eslint.config.mjs next.config.ts postcss.config.mjs vite.config.ts"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "3.1090.0",
