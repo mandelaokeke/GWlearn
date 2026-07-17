@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { UploadWorkspace } from "./upload-workspace";
 
 type Experience = "student" | "faculty";
 
@@ -73,7 +74,7 @@ export function GWLearnHome() {
           <a href="#workspace">Workspace</a>
           <a href="#workflow">How it works</a>
           <a href="#architecture">Architecture</a>
-          <a className="nav-cta" href="#demo">View demo</a>
+          <a className="nav-cta" href="#upload">Upload a lecture</a>
         </nav>
       </header>
 
@@ -98,7 +99,7 @@ export function GWLearnHome() {
           <p className="hero-description">{content.description}</p>
 
           <div className="hero-actions">
-            <a className="primary-button" href="#workspace">{content.action}</a>
+            <a className="primary-button" href="#upload">{content.action}</a>
             <a className="text-link" href="#workflow">See the 3-step workflow <span aria-hidden="true">→</span></a>
           </div>
 
@@ -178,6 +179,8 @@ export function GWLearnHome() {
           </div>
         </div>
       </section>
+
+      <UploadWorkspace />
 
       <section className="workspace-section" id="workspace">
         <div className="section-heading">

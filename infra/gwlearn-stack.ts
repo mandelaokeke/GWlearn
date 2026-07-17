@@ -79,6 +79,13 @@ export class GWLearnStack extends Stack {
 
     const userPool = new UserPool(this, "UserPool", {
       accountRecovery: AccountRecovery.EMAIL_ONLY,
+      passwordPolicy: {
+        minLength: 8,
+        requireDigits: true,
+        requireLowercase: true,
+        requireSymbols: true,
+        requireUppercase: true,
+      },
       removalPolicy: RemovalPolicy.RETAIN,
       selfSignUpEnabled: true,
       signInAliases: { email: true },

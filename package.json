@@ -10,7 +10,7 @@
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
-    "test:unit": "node --experimental-strip-types --test packages/contracts/video.test.ts services/upload-api/create-upload.test.ts services/upload-api/aws-adapters.test.ts services/upload-api/handler.test.ts infra/gwlearn-stack.test.ts",
+    "test:unit": "node --experimental-strip-types --test packages/contracts/video.test.ts packages/browser/aws-config.test.ts packages/browser/direct-upload.test.ts services/upload-api/create-upload.test.ts services/upload-api/aws-adapters.test.ts services/upload-api/handler.test.ts infra/gwlearn-stack.test.ts",
     "infra:synth": "cdk synth",
     "infra:diff": "cdk diff",
     "typecheck": "tsc --noEmit",
@@ -21,6 +21,8 @@
     "@aws-sdk/client-s3": "3.1090.0",
     "@aws-sdk/lib-dynamodb": "3.1090.0",
     "@aws-sdk/s3-presigned-post": "3.1090.0",
+    "amazon-cognito-identity-js": "6.3.20",
+    "hash-wasm": "4.12.0",
     "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6"

@@ -25,5 +25,7 @@ test("server-renders the GWLearn portfolio shell", async () => {
   assert.match(html, /Amazon Cognito/i);
   assert.match(html, /DynamoDB/i);
   assert.match(html, /Transcribe \+ Bedrock/i);
+  assert.match(html, /The upload path is built/i);
+  assert.match(html, /Authenticated intake, without a fake success state/i);
   assert.doesNotMatch(html, /codex-preview|react-loading-skeleton|Starter Project/i);
 });

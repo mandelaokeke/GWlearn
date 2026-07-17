@@ -82,3 +82,14 @@ The current CDK stack deploys the first backend vertical slice:
 - DynamoDB point-in-time recovery and retain policies protect portfolio data from accidental stack deletion.
 
 This stage intentionally stops before upload-complete events, Transcribe, Step Functions, and Bedrock. Those services enter together in the next processing slice so paid AI work cannot begin before an upload is durably verified.
+
+## Implemented browser flow
+
+The portfolio interface now activates a real upload workspace when its public AWS outputs are configured:
+
+1. Cognito handles sign-up, email confirmation, SRP sign-in, token refresh, and local session restoration.
+2. The browser hashes the selected video incrementally so a large lecture is not copied into memory as one buffer.
+3. The verified access token requests an owner-scoped upload grant from API Gateway.
+4. The browser posts the video directly to S3 and displays separate verification, grant, transfer, completion, and failure states.
+
+No client request sends an authoritative owner identifier. Without deployed AWS outputs, the public portfolio renders an explicit deployment-ready state rather than fake authentication or upload results.

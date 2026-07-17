@@ -6,7 +6,7 @@ This repository is a staged TypeScript and AWS rebuild of a 2024 classroom proje
 
 ## Current stage
 
-**Stage 3: deployable AWS upload boundary**
+**Stage 4: authenticated browser-to-S3 upload**
 
 - Responsive portfolio and product shell in TypeScript and React.
 - Student/faculty experience switch with realistic workspace states.
@@ -16,9 +16,11 @@ This repository is a staged TypeScript and AWS rebuild of a 2024 classroom proje
 - An owner-scoped upload use case with injectable database and object-storage ports.
 - DynamoDB and S3 adapters that enforce conditional ownership writes and bounded presigned uploads.
 - TypeScript CDK for Cognito, a private media bucket, DynamoDB, API Gateway, and Lambda.
+- Cognito sign-up, email confirmation, sign-in, session restoration, and sign-out in the portfolio interface.
+- Incremental browser SHA-256 hashing and a direct S3 upload flow with visible preparation and transfer states.
 - Unit and infrastructure tests for authentication, validation, isolation, upload constraints, failure compensation, and security configuration.
 
-The interface currently uses representative data. The authenticated `POST /uploads` backend is deployable; the next vertical slice connects the browser and starts the asynchronous Transcribe and Bedrock workflow after S3 confirms an upload.
+The portfolio remains honest when AWS has not been deployed: it renders the architecture and activation steps instead of simulating a successful upload. Once the four `NEXT_PUBLIC_*` AWS values are supplied, the same interface activates the real Cognito and private S3 flow. The next vertical slice starts the asynchronous Transcribe and Bedrock workflow after S3 confirms an upload.
 
 ## Target architecture
 
@@ -48,6 +50,15 @@ npm install
 npm run dev
 ```
 
+After deploying the CDK stack, copy its API, user-pool, and client outputs into:
+
+```bash
+NEXT_PUBLIC_AWS_REGION=us-east-1
+NEXT_PUBLIC_GWLEARN_API_URL=https://your-api-id.execute-api.us-east-1.amazonaws.com
+NEXT_PUBLIC_GWLEARN_USER_POOL_ID=us-east-1_example
+NEXT_PUBLIC_GWLEARN_USER_POOL_CLIENT_ID=exampleclientid
+```
+
 Quality checks:
 
 ```bash
@@ -69,6 +80,7 @@ GWLEARN_ALLOWED_ORIGIN=https://your-app.example npm run infra:synth
 app/                    Product interface
 docs/                   Architecture and decisions
 packages/contracts/     Shared runtime validation and domain types
+packages/browser/       Cognito configuration, hashing, and direct-upload client
 services/upload-api/    Cloud-independent upload application logic
 infra/                  AWS CDK stack and infrastructure assertions
 tests/                  Server-rendered behavior checks
@@ -81,7 +93,7 @@ The backend and infrastructure packages will be added when the first upload-to-p
 
 1. Establish the typed product foundation.
 2. Add Cognito, S3, DynamoDB, API Gateway, and Lambda through TypeScript CDK. ✅
-3. Connect direct browser uploads and durable processing status.
+3. Connect direct browser uploads and durable processing status. ✅
 4. Orchestrate Transcribe and Bedrock through Step Functions.
 5. Add transcript-grounded study tools and chat with timestamp citations.
 6. Complete accessibility, security, cost, and portfolio release checks.
