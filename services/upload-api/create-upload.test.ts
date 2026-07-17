@@ -16,12 +16,13 @@ const request = {
   title: "Security Architecture",
 };
 
-function createHarness(storageFailure = false) {
+function createHarness(storageFailure = false, repositoryFailure = false) {
   const created: PendingVideo[] = [];
   const deleted: Array<{ ownerId: string; videoId: string }> = [];
 
   const repository: UploadRepository = {
     async createPendingVideo(video) {
+      if (repositoryFailure) throw new Error("conditional write rejected");
       created.push(video);
     },
     async deletePendingVideo(videoId, ownerId) {
@@ -115,4 +116,15 @@ test("compensates for storage-grant failure without leaking provider errors", as
     statusCode: 500,
   });
   assert.deepEqual(deleted, [{ ownerId: "user-42", videoId: "video-123" }]);
+});
+
+test("does not delete a pre-existing record when the conditional create fails", async () => {
+  const { deleted, execute } = createHarness(false, true);
+  const result = await execute(
+    { groups: ["students"], subject: "user-42" },
+    request,
+  );
+
+  assert.equal(result.statusCode, 500);
+  assert.deepEqual(deleted, []);
 });

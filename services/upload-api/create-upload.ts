@@ -110,8 +110,10 @@ export function createUploadUseCase(dependencies: CreateUploadDependencies) {
       videoId,
     };
 
+    let pendingVideoCreated = false;
     try {
       await dependencies.repository.createPendingVideo(pendingVideo);
+      pendingVideoCreated = true;
 
       const grant = await dependencies.storage.createUploadGrant({
         checksumSha256: parsed.value.checksumSha256,
@@ -132,9 +134,11 @@ export function createUploadUseCase(dependencies: CreateUploadDependencies) {
         statusCode: 201,
       };
     } catch {
-      await dependencies.repository
-        .deletePendingVideo(videoId, actor.subject)
-        .catch(() => undefined);
+      if (pendingVideoCreated) {
+        await dependencies.repository
+          .deletePendingVideo(videoId, actor.subject)
+          .catch(() => undefined);
+      }
 
       return {
         body: { message: "Unable to prepare the upload" },

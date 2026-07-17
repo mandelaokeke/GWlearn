@@ -31,8 +31,11 @@ jobs:
       - name: Check TypeScript
         run: npm run typecheck
 
-      - name: Run cloud-independent unit tests
+      - name: Run domain, adapter, and infrastructure tests
         run: npm run test:unit
+
+      - name: Synthesize AWS infrastructure
+        run: npm run infra:synth
 
       - name: Build and test server output
         run: npm test

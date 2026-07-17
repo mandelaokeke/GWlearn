@@ -69,3 +69,16 @@ Video bytes and full transcript bodies do not belong in DynamoDB.
 - Cache completed artifacts by video, type, source version, and prompt version.
 - Expire abandoned uploads and short-lived chat history.
 - Use a small licensed sample lecture for the public portfolio path.
+
+## Implemented upload boundary
+
+The current CDK stack deploys the first backend vertical slice:
+
+- Cognito authenticates email-based users and provides `students` and `faculty` groups.
+- API Gateway validates the access token before `POST /uploads` reaches Lambda.
+- Lambda derives ownership from the verified JWT subject rather than request data.
+- DynamoDB conditionally creates one owner-indexed `UPLOADING` record.
+- S3 remains private and accepts a short-lived POST for exactly one generated key, declared content type, SHA-256 checksum, and bounded byte length.
+- DynamoDB point-in-time recovery and retain policies protect portfolio data from accidental stack deletion.
+
+This stage intentionally stops before upload-complete events, Transcribe, Step Functions, and Bedrock. Those services enter together in the next processing slice so paid AI work cannot begin before an upload is durably verified.

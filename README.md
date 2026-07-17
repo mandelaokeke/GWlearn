@@ -6,7 +6,7 @@ This repository is a staged TypeScript and AWS rebuild of a 2024 classroom proje
 
 ## Current stage
 
-**Stage 2: owner-scoped upload foundation**
+**Stage 3: deployable AWS upload boundary**
 
 - Responsive portfolio and product shell in TypeScript and React.
 - Student/faculty experience switch with realistic workspace states.
@@ -14,9 +14,11 @@ This repository is a staged TypeScript and AWS rebuild of a 2024 classroom proje
 - Environment-variable contract, strict TypeScript, linting, server-render test, and CI workflow.
 - Runtime-validated upload contracts, processing-state transitions, and DynamoDB key builders.
 - An owner-scoped upload use case with injectable database and object-storage ports.
-- Unit tests for authentication, validation, isolation, presigned-upload constraints, and failure compensation.
+- DynamoDB and S3 adapters that enforce conditional ownership writes and bounded presigned uploads.
+- TypeScript CDK for Cognito, a private media bucket, DynamoDB, API Gateway, and Lambda.
+- Unit and infrastructure tests for authentication, validation, isolation, upload constraints, failure compensation, and security configuration.
 
-The interface currently uses representative data. The upload domain is implemented and tested without cloud dependencies; the next adapter commit wires it to DynamoDB, S3, Cognito, API Gateway, and TypeScript CDK.
+The interface currently uses representative data. The authenticated `POST /uploads` backend is deployable; the next vertical slice connects the browser and starts the asynchronous Transcribe and Bedrock workflow after S3 confirms an upload.
 
 ## Target architecture
 
@@ -52,6 +54,13 @@ Quality checks:
 npm run lint
 npm run typecheck
 npm test
+npm run infra:synth
+```
+
+To synthesize for a deployed frontend origin:
+
+```bash
+GWLEARN_ALLOWED_ORIGIN=https://your-app.example npm run infra:synth
 ```
 
 ## Repository shape
@@ -61,6 +70,7 @@ app/                    Product interface
 docs/                   Architecture and decisions
 packages/contracts/     Shared runtime validation and domain types
 services/upload-api/    Cloud-independent upload application logic
+infra/                  AWS CDK stack and infrastructure assertions
 tests/                  Server-rendered behavior checks
 .github/workflows/      Continuous integration
 ```
@@ -70,8 +80,8 @@ The backend and infrastructure packages will be added when the first upload-to-p
 ## Roadmap
 
 1. Establish the typed product foundation.
-2. Add Cognito, S3, DynamoDB, API Gateway, and Lambda through TypeScript CDK.
-3. Implement direct uploads and durable processing status.
+2. Add Cognito, S3, DynamoDB, API Gateway, and Lambda through TypeScript CDK. ✅
+3. Connect direct browser uploads and durable processing status.
 4. Orchestrate Transcribe and Bedrock through Step Functions.
 5. Add transcript-grounded study tools and chat with timestamp citations.
 6. Complete accessibility, security, cost, and portfolio release checks.
