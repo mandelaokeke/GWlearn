@@ -71,6 +71,7 @@ export function UploadWorkspace({
   const [phase, setPhase] = useState<UploadPhase>("idle");
   const [progress, setProgress] = useState(0);
   const [uploadMessage, setUploadMessage] = useState("");
+  const [uploadedVideoId, setUploadedVideoId] = useState("");
 
   useEffect(() => {
     if (!configuration.configured) return;
@@ -172,6 +173,7 @@ export function UploadWorkspace({
       );
       setProgress(100);
       setPhase("complete");
+      setUploadedVideoId(grant.videoId);
       setUploadMessage(
         `Upload complete. Video ${grant.videoId} is now being transcribed and turned into study materials.`,
       );
@@ -250,6 +252,7 @@ export function UploadWorkspace({
                   <div><span>{phase === "complete" ? "Ready" : phase}</span><strong>{progress}%</strong></div>
                   <progress max="100" value={progress}>{progress}%</progress>
                   {uploadMessage && <p>{uploadMessage}</p>}
+                  {phase === "complete" && uploadedVideoId && <a className="upload-library-link" href="/learn/library">View processing status in your library →</a>}
                 </div>
               )}
 

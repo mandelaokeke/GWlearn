@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
+import { awsRuntimeConfig } from "../../aws-runtime-config";
+import { LectureClient } from "./lecture-client";
 
-export const metadata: Metadata = { title: "Zero Trust Fundamentals" };
-const lines = [["00:42", "A zero-trust model starts with a simple assumption: no request is trusted by default."], ["01:18", "Identity, device posture, and context are evaluated before access is granted."], ["02:07", "The practical goal is continuously verified, least-privilege access."]];
+export const metadata: Metadata = { title: "Lecture workspace" };
 export default function LecturePage() {
-  return <section className="app-page lecture-workspace-page"><div className="app-page-heading"><div><p className="app-kicker">CYBERSECURITY 101</p><h1>Zero Trust Fundamentals</h1><p>Transcript and learning materials ready · 18:42</p></div><span className="ready-pill">Processing complete</span></div><div className="lecture-workspace"><div className="lecture-player"><div className="player-screen"><span>CYBERSECURITY 101</span><b>▶</b><h2>Zero Trust Fundamentals</h2><div><i /></div><small>02:18 / 18:42</small></div><div className="learning-output"><p className="app-kicker">AI SUMMARY</p><h2>Core idea</h2><p>Zero trust continuously verifies identity, device posture, and context before granting least-privilege access.</p><ul><li>Never trust a request by default.</li><li>Evaluate identity and device context.</li><li>Limit access to what the task requires.</li></ul></div></div><aside className="lecture-transcript"><div><p className="app-kicker">TIMESTAMPED TRANSCRIPT</p><h2>Follow the source</h2></div>{lines.map(([time, text], index) => <button className={index === 1 ? "active" : ""} type="button" key={time}><span>{time}</span><p>{text}</p></button>)}<div className="study-tools"><span>STUDY TOOLS</span><button type="button">Summary</button><button type="button">Study guide</button><button type="button">Flashcards</button></div></aside></div></section>;
+  return <LectureClient configurationInput={awsRuntimeConfig()} />;
 }

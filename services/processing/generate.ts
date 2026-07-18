@@ -46,6 +46,14 @@ export function timestampedTranscript(document: TranscribeDocument): string {
   return lines.join("\n");
 }
 
+export function transcriptMarkdown(transcript: string): string {
+  const sections = transcript.split("\n").filter(Boolean).map((line) => {
+    const match = /^\[([^\]]+)\]\s*(.*)$/.exec(line);
+    return match ? `## ${match[1]}\n\n${match[2]}` : line;
+  });
+  return `# Lecture transcript\n\n> Generated from the uploaded lecture by Amazon Transcribe.\n\n${sections.join("\n\n")}`;
+}
+
 export function parseArtifacts(text: string): LearningArtifacts {
   const cleaned = text.trim().replace(/^```(?:json)?\s*/i, "").replace(/\s*```$/, "");
   const value = JSON.parse(cleaned) as Partial<LearningArtifacts>;
@@ -131,7 +139,7 @@ export class ArtifactGenerator {
     if (!output) throw new Error("Amazon Bedrock returned no text output");
     const artifacts = parseArtifacts(output);
     const artifactKey = `private/${input.ownerId}/videos/${input.videoId}/artifacts/learning.json`;
-    const transcriptTextKey = `private/${input.ownerId}/videos/${input.videoId}/transcript/timestamped.txt`;
+    const transcriptMarkdownKey = `private/${input.ownerId}/videos/${input.videoId}/transcript/transcript.md`;
 
     await Promise.all([
       this.s3.send(new PutObjectCommand({
@@ -147,10 +155,10 @@ export class ArtifactGenerator {
         Key: artifactKey,
       })),
       this.s3.send(new PutObjectCommand({
-        Body: transcript,
+        Body: transcriptMarkdown(transcript),
         Bucket: input.bucketName,
-        ContentType: "text/plain; charset=utf-8",
-        Key: transcriptTextKey,
+        ContentType: "text/markdown; charset=utf-8",
+        Key: transcriptMarkdownKey,
       })),
     ]);
 
@@ -163,14 +171,14 @@ export class ArtifactGenerator {
           ":generating": "GENERATING",
           ":modelId": this.modelId,
           ":ready": "READY",
-          ":transcriptTextKey": transcriptTextKey,
+          ":transcriptMarkdownKey": transcriptMarkdownKey,
           ":updatedAt": new Date().toISOString(),
         },
         Key: key,
         TableName: this.tableName,
-        UpdateExpression: "SET #status = :ready, artifactKey = :artifactKey, transcriptTextKey = :transcriptTextKey, modelId = :modelId, updatedAt = :updatedAt",
+        UpdateExpression: "SET #status = :ready, artifactKey = :artifactKey, transcriptMarkdownKey = :transcriptMarkdownKey, modelId = :modelId, updatedAt = :updatedAt",
       }),
     );
-    return { artifactKey, status: "READY", transcriptTextKey: transcriptTextKey };
+    return { artifactKey, status: "READY", transcriptMarkdownKey };
   }
 }

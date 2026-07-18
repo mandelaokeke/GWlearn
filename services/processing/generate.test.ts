@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { parseArtifacts, timestampedTranscript } from "./generate.ts";
+import { parseArtifacts, timestampedTranscript, transcriptMarkdown } from "./generate.ts";
 
 test("turns Transcribe items into compact timestamped lines", () => {
   assert.equal(
@@ -14,6 +14,13 @@ test("turns Transcribe items into compact timestamped lines", () => {
       },
     }),
     "[00:02] Zero trust.",
+  );
+});
+
+test("stores the readable transcript as timestamped Markdown", () => {
+  assert.equal(
+    transcriptMarkdown("[00:02] Trust must be verified.\n[00:09] Access stays limited."),
+    "# Lecture transcript\n\n> Generated from the uploaded lecture by Amazon Transcribe.\n\n## 00:02\n\nTrust must be verified.\n\n## 00:09\n\nAccess stays limited.",
   );
 });
 

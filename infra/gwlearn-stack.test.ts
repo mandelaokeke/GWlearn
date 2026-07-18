@@ -53,8 +53,11 @@ test("synthesizes a private, authenticated, owner-scoped upload boundary", () =>
 
   const json = JSON.stringify(template.toJSON());
   assert.match(json, /POST \/uploads/);
+  assert.match(json, /GET \/videos/);
+  assert.match(json, /GET \/videos\/\{videoId\}/);
   assert.match(json, /https:\/\/gwlearn\.example\.com/);
   assert.doesNotMatch(json, /dynamodb:Scan/);
+  assert.match(json, /dynamodb:Query/);
   assert.match(json, /dynamodb:UpdateItem/);
   assert.match(json, /transcribe:startTranscriptionJob/);
   assert.match(json, /transcribe:getTranscriptionJob/);

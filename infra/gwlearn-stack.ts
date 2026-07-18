@@ -81,10 +81,10 @@ export class GWLearnStack extends Stack {
       blockPublicAccess: BlockPublicAccess.BLOCK_ALL,
       cors: [
         {
-          allowedHeaders: ["content-type", "x-amz-checksum-sha256"],
-          allowedMethods: [HttpMethods.POST],
+          allowedHeaders: ["content-type", "range", "x-amz-checksum-sha256"],
+          allowedMethods: [HttpMethods.GET, HttpMethods.POST],
           allowedOrigins: [props.allowedOrigin],
-          exposedHeaders: ["etag", "x-amz-checksum-sha256"],
+          exposedHeaders: ["accept-ranges", "content-length", "content-range", "etag", "x-amz-checksum-sha256"],
           maxAge: 900,
         },
       ],
@@ -140,6 +140,26 @@ export class GWLearnStack extends Stack {
         resources: [table.tableArn],
       }),
     );
+
+    const readVideosFunction = new NodejsFunction(this, "ReadVideosFunction", {
+      entry: join(currentDirectory, "../services/video-api/handler.ts"),
+      environment: {
+        MEDIA_BUCKET_NAME: mediaBucket.bucketName,
+        TABLE_NAME: table.tableName,
+      },
+      handler: "handler",
+      memorySize: 512,
+      runtime: Runtime.NODEJS_24_X,
+      timeout: Duration.seconds(15),
+    });
+    readVideosFunction.addToRolePolicy(new PolicyStatement({
+      actions: ["dynamodb:GetItem", "dynamodb:Query"],
+      resources: [table.tableArn, `${table.tableArn}/index/GSI1`],
+    }));
+    readVideosFunction.addToRolePolicy(new PolicyStatement({
+      actions: ["s3:GetObject"],
+      resources: [mediaBucket.arnForObjects("private/*/videos/*/*")],
+    }));
 
     const bedrockModelId = "amazon.nova-lite-v1:0";
     const controlFunction = new NodejsFunction(this, "ProcessingControlFunction", {
@@ -341,7 +361,7 @@ export class GWLearnStack extends Stack {
     const api = new HttpApi(this, "ApplicationApi", {
       corsPreflight: {
         allowHeaders: ["authorization", "content-type"],
-        allowMethods: [CorsHttpMethod.POST, CorsHttpMethod.OPTIONS],
+        allowMethods: [CorsHttpMethod.GET, CorsHttpMethod.POST, CorsHttpMethod.OPTIONS],
         allowOrigins: [props.allowedOrigin],
         maxAge: Duration.hours(1),
       },
@@ -359,6 +379,22 @@ export class GWLearnStack extends Stack {
       ),
       methods: [HttpMethod.POST],
       path: "/uploads",
+    });
+    const readVideosIntegration = new HttpLambdaIntegration(
+      "ReadVideosIntegration",
+      readVideosFunction,
+    );
+    api.addRoutes({
+      authorizer,
+      integration: readVideosIntegration,
+      methods: [HttpMethod.GET],
+      path: "/videos",
+    });
+    api.addRoutes({
+      authorizer,
+      integration: readVideosIntegration,
+      methods: [HttpMethod.GET],
+      path: "/videos/{videoId}",
     });
 
     new CfnOutput(this, "ApiUrl", { value: api.apiEndpoint });
