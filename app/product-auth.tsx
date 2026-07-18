@@ -7,9 +7,9 @@ import { restoreSession, signOut, type AuthenticatedSession } from "../packages/
 function useProductSession(configurationInput: BrowserAWSConfigInput) {
   const configuration = useMemo(() => browserAWSConfig(configurationInput), [configurationInput]);
   const [session, setSession] = useState<AuthenticatedSession | null>(null);
-  const [checking, setChecking] = useState(true);
+  const [checking, setChecking] = useState(configuration.configured);
   useEffect(() => {
-    if (!configuration.configured) { setChecking(false); return; }
+    if (!configuration.configured) return;
     restoreSession(configuration.value).then((value) => {
       setSession(value);
       if (!value) window.location.replace("/?signin=required#upload");
