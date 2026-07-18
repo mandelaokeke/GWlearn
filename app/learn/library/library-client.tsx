@@ -28,7 +28,10 @@ export function LibraryClient({ configurationInput }: { configurationInput: Brow
     } finally { setLoading(false); }
   }, [configuration]);
 
-  useEffect(() => { void load(); }, [load]);
+  useEffect(() => {
+    const initialLoad = window.setTimeout(() => void load(), 0);
+    return () => window.clearTimeout(initialLoad);
+  }, [load]);
   useEffect(() => {
     if (!videos.some((video) => activeStatuses.has(video.status))) return;
     const timer = window.setInterval(() => void load(), 8000);
