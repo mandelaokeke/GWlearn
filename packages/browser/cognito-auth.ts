@@ -19,13 +19,18 @@ function userPool(config: BrowserAWSConfig) {
   });
 }
 
+export function emailFromIdToken(payload: Record<string, unknown>, fallback: string): string {
+  const email = payload.email;
+  return typeof email === "string" && email.trim() ? email : fallback;
+}
+
 function sessionValue(
   email: string,
   session: CognitoUserSession,
 ): AuthenticatedSession {
   return {
     accessToken: session.getAccessToken().getJwtToken(),
-    email,
+    email: emailFromIdToken(session.getIdToken().payload, email),
   };
 }
 

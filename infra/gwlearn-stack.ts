@@ -162,6 +162,30 @@ export class GWLearnStack extends Stack {
     }));
 
     const bedrockModelId = "amazon.nova-lite-v1:0";
+    const lectureChatFunction = new NodejsFunction(this, "LectureChatFunction", {
+      entry: join(currentDirectory, "../services/chat-api/handler.ts"),
+      environment: {
+        BEDROCK_MODEL_ID: bedrockModelId,
+        MEDIA_BUCKET_NAME: mediaBucket.bucketName,
+        TABLE_NAME: table.tableName,
+      },
+      handler: "handler",
+      memorySize: 1024,
+      runtime: Runtime.NODEJS_24_X,
+      timeout: Duration.seconds(60),
+    });
+    lectureChatFunction.addToRolePolicy(new PolicyStatement({
+      actions: ["dynamodb:GetItem"],
+      resources: [table.tableArn],
+    }));
+    lectureChatFunction.addToRolePolicy(new PolicyStatement({
+      actions: ["s3:GetObject"],
+      resources: [mediaBucket.arnForObjects("private/*/videos/*/transcript/*")],
+    }));
+    lectureChatFunction.addToRolePolicy(new PolicyStatement({
+      actions: ["bedrock:InvokeModel"],
+      resources: [`arn:${this.partition}:bedrock:${this.region}::foundation-model/${bedrockModelId}`],
+    }));
     const controlFunction = new NodejsFunction(this, "ProcessingControlFunction", {
       entry: join(currentDirectory, "../services/processing/control-handler.ts"),
       environment: { TABLE_NAME: table.tableName },
@@ -395,6 +419,12 @@ export class GWLearnStack extends Stack {
       integration: readVideosIntegration,
       methods: [HttpMethod.GET],
       path: "/videos/{videoId}",
+    });
+    api.addRoutes({
+      authorizer,
+      integration: new HttpLambdaIntegration("LectureChatIntegration", lectureChatFunction),
+      methods: [HttpMethod.POST],
+      path: "/videos/{videoId}/chat",
     });
 
     new CfnOutput(this, "ApiUrl", { value: api.apiEndpoint });

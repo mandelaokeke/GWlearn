@@ -55,6 +55,7 @@ test("synthesizes a private, authenticated, owner-scoped upload boundary", () =>
   assert.match(json, /POST \/uploads/);
   assert.match(json, /GET \/videos/);
   assert.match(json, /GET \/videos\/\{videoId\}/);
+  assert.match(json, /POST \/videos\/\{videoId\}\/chat/);
   assert.match(json, /https:\/\/gwlearn\.example\.com/);
   assert.doesNotMatch(json, /dynamodb:Scan/);
   assert.match(json, /dynamodb:Query/);
