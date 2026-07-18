@@ -10,7 +10,7 @@
     "build": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext build",
     "start": "WRANGLER_LOG_PATH=.wrangler/wrangler.log vinext start",
     "test": "npm run build && node --test tests/rendered-html.test.mjs",
-    "test:unit": "node --experimental-strip-types --test packages/contracts/video.test.ts packages/browser/aws-config.test.ts packages/browser/direct-upload.test.ts services/upload-api/create-upload.test.ts services/upload-api/aws-adapters.test.ts services/upload-api/handler.test.ts services/processing/control.test.ts services/processing/generate.test.ts infra/gwlearn-stack.test.ts",
+    "test:unit": "node --experimental-strip-types --test packages/contracts/video.test.ts packages/browser/aws-config.test.ts packages/browser/direct-upload.test.ts services/upload-api/create-upload.test.ts services/upload-api/aws-adapters.test.ts services/upload-api/handler.test.ts services/processing/control.test.ts services/processing/generate.test.ts infra/gwlearn-stack.test.ts tests/product-routes.test.mjs",
     "infra:synth": "cdk synth",
     "infra:diff": "cdk diff",
     "typecheck": "tsc --noEmit",

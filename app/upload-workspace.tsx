@@ -47,8 +47,12 @@ function friendlyError(error: unknown): string {
 
 export function UploadWorkspace({
   configurationInput,
+  compact = false,
+  redirectAfterSignIn,
 }: {
   configurationInput?: BrowserAWSConfigInput;
+  compact?: boolean;
+  redirectAfterSignIn?: string;
 }) {
   const configuration = useMemo(
     () => browserAWSConfig(configurationInput),
@@ -70,8 +74,11 @@ export function UploadWorkspace({
 
   useEffect(() => {
     if (!configuration.configured) return;
-    restoreSession(configuration.value).then(setSession).catch(() => setSession(null));
-  }, [configuration]);
+    restoreSession(configuration.value).then((value) => {
+      setSession(value);
+      if (value && redirectAfterSignIn) window.location.replace(redirectAfterSignIn);
+    }).catch(() => setSession(null));
+  }, [configuration, redirectAfterSignIn]);
 
   if (!configuration.configured) {
     return (
@@ -113,8 +120,10 @@ export function UploadWorkspace({
         setAuthView("sign-in");
         setAuthMessage("Account confirmed. Sign in to upload your lecture.");
       } else {
-        setSession(await signIn(configuration.value, email, password));
+        const nextSession = await signIn(configuration.value, email, password);
+        setSession(nextSession);
         setPassword("");
+        if (redirectAfterSignIn) window.location.assign(redirectAfterSignIn);
       }
     } catch (error) {
       setAuthMessage(friendlyError(error));
@@ -173,7 +182,7 @@ export function UploadWorkspace({
   }
 
   return (
-    <section className="upload-section" id="upload">
+    <section className={compact ? "upload-section upload-section-compact" : "upload-section"} id="upload">
       <div className="upload-intro">
         <p className="eyebrow">Try the real intake flow</p>
         <h2>One secure path from your browser to private storage.</h2>

@@ -185,7 +185,7 @@ export function GWLearnHome({
         </div>
       </section>
 
-      <UploadWorkspace configurationInput={awsConfiguration} />
+      <UploadWorkspace configurationInput={awsConfiguration} redirectAfterSignIn="/learn" />
 
       <section className="workspace-section" id="workspace">
         <div className="section-heading">
