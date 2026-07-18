@@ -39,3 +39,11 @@ jobs:
 
       - name: Build and test server output
         run: npm test
+
+      - name: Build and test hosted Cognito client
+        env:
+          NEXT_PUBLIC_AWS_REGION: us-east-1
+          NEXT_PUBLIC_GWLEARN_API_URL: https://api.example.com
+          NEXT_PUBLIC_GWLEARN_USER_POOL_CLIENT_ID: ci-browser-client
+          NEXT_PUBLIC_GWLEARN_USER_POOL_ID: us-east-1_ciPool
+        run: npm run build && node --test tests/hosted-client-bundle.test.mjs

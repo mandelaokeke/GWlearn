@@ -44,6 +44,11 @@ export default defineConfig(async () => {
   const { cloudflare } = await import("@cloudflare/vite-plugin");
 
   return {
+    // amazon-cognito-identity-js includes the browser Buffer polyfill, whose
+    // legacy build reads Node's `global` identifier during module startup.
+    // Map it to the standards-based browser global so the hosted client can
+    // hydrate before Cognito is used.
+    define: { global: "globalThis" },
     server: isCodexSeatbeltSandbox
       ? { watch: { useFsEvents: false, usePolling: true } }
       : undefined,
