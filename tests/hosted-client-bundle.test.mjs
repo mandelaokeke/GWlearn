@@ -9,7 +9,10 @@ test("hosted Cognito bundle uses the browser global", async () => {
   const fileName = assets.find((name) => /^gwlearn-home-.*\.js$/.test(name));
 
   assert.ok(fileName, "the GWLearn browser entry must be emitted");
-  const source = await readFile(join(assetsDirectory.pathname, fileName), "utf8");
+  const browserFiles = assets.filter((name) => name.endsWith(".js"));
+  const source = (await Promise.all(
+    browserFiles.map((name) => readFile(join(assetsDirectory.pathname, name), "utf8")),
+  )).join("\n");
 
   assert.match(source, /Sign in to upload privately/);
   assert.match(source, /globalThis\.TYPED_ARRAY_SUPPORT/);
