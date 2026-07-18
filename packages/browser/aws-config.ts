@@ -5,16 +5,18 @@ export interface BrowserAWSConfig {
   userPoolId: string;
 }
 
-export type BrowserConfigResult =
-  | { configured: true; value: BrowserAWSConfig }
-  | { configured: false; missing: string[] };
-
-export function parseBrowserAWSConfig(input: {
+export interface BrowserAWSConfigInput {
   apiUrl?: string;
   region?: string;
   userPoolClientId?: string;
   userPoolId?: string;
-}): BrowserConfigResult {
+}
+
+export type BrowserConfigResult =
+  | { configured: true; value: BrowserAWSConfig }
+  | { configured: false; missing: string[] };
+
+export function parseBrowserAWSConfig(input: BrowserAWSConfigInput): BrowserConfigResult {
   const fields = [
     "apiUrl",
     "region",
@@ -43,11 +45,13 @@ export function parseBrowserAWSConfig(input: {
   };
 }
 
-export function browserAWSConfig(): BrowserConfigResult {
-  return parseBrowserAWSConfig({
-    apiUrl: process.env.NEXT_PUBLIC_GWLEARN_API_URL,
-    region: process.env.NEXT_PUBLIC_AWS_REGION,
-    userPoolClientId: process.env.NEXT_PUBLIC_GWLEARN_USER_POOL_CLIENT_ID,
-    userPoolId: process.env.NEXT_PUBLIC_GWLEARN_USER_POOL_ID,
-  });
+export function browserAWSConfig(input?: BrowserAWSConfigInput): BrowserConfigResult {
+  return parseBrowserAWSConfig(
+    input ?? {
+      apiUrl: process.env.NEXT_PUBLIC_GWLEARN_API_URL,
+      region: process.env.NEXT_PUBLIC_AWS_REGION,
+      userPoolClientId: process.env.NEXT_PUBLIC_GWLEARN_USER_POOL_CLIENT_ID,
+      userPoolId: process.env.NEXT_PUBLIC_GWLEARN_USER_POOL_ID,
+    },
+  );
 }

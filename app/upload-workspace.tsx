@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState, type FormEvent } from "react";
 import { MAX_VIDEO_BYTES } from "../packages/contracts/video.ts";
 import { browserAWSConfig } from "../packages/browser/aws-config.ts";
+import type { BrowserAWSConfigInput } from "../packages/browser/aws-config.ts";
 import {
   confirmSignUp,
   restoreSession,
@@ -44,8 +45,15 @@ function friendlyError(error: unknown): string {
   return error.message || "Something went wrong. Please try again.";
 }
 
-export function UploadWorkspace() {
-  const configuration = useMemo(() => browserAWSConfig(), []);
+export function UploadWorkspace({
+  configurationInput,
+}: {
+  configurationInput?: BrowserAWSConfigInput;
+}) {
+  const configuration = useMemo(
+    () => browserAWSConfig(configurationInput),
+    [configurationInput],
+  );
   const [session, setSession] = useState<AuthenticatedSession | null>(null);
   const [authView, setAuthView] = useState<AuthView>("sign-in");
   const [email, setEmail] = useState("");
@@ -155,7 +163,9 @@ export function UploadWorkspace() {
       );
       setProgress(100);
       setPhase("complete");
-      setUploadMessage(`Upload complete. Video ${grant.videoId} is ready for processing.`);
+      setUploadMessage(
+        `Upload complete. Video ${grant.videoId} is now being transcribed and turned into study materials.`,
+      );
     } catch (error) {
       setPhase("error");
       setUploadMessage(friendlyError(error));

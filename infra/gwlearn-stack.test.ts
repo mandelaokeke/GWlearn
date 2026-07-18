@@ -33,6 +33,8 @@ test("synthesizes a private, authenticated, owner-scoped upload boundary", () =>
     },
   });
   template.resourceCountIs("AWS::Cognito::UserPool", 1);
+  template.resourceCountIs("AWS::StepFunctions::StateMachine", 1);
+  template.resourceCountIs("AWS::Events::Rule", 1);
   template.hasResourceProperties("AWS::Cognito::UserPoolClient", {
     AllowedOAuthFlows: Match.absent(),
     CallbackURLs: Match.absent(),
@@ -53,6 +55,11 @@ test("synthesizes a private, authenticated, owner-scoped upload boundary", () =>
   assert.match(json, /POST \/uploads/);
   assert.match(json, /https:\/\/gwlearn\.example\.com/);
   assert.doesNotMatch(json, /dynamodb:Scan/);
-  assert.doesNotMatch(json, /dynamodb:UpdateItem/);
+  assert.match(json, /dynamodb:UpdateItem/);
+  assert.match(json, /transcribe:startTranscriptionJob/);
+  assert.match(json, /transcribe:getTranscriptionJob/);
+  assert.match(json, /bedrock:InvokeModel/);
+  assert.match(json, /\\\"Media\\\":\{\\\"MediaFileUri\.\$\\\"/);
+  assert.match(json, /private\/\*\/videos\/\*\/source\.\*/);
   assert.doesNotMatch(json, /s3:PutObjectTagging/);
 });

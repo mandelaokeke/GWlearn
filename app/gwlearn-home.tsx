@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { UploadWorkspace } from "./upload-workspace";
+import type { BrowserAWSConfigInput } from "../packages/browser/aws-config";
 
 type Experience = "student" | "faculty";
 
@@ -41,7 +42,11 @@ const transcript = [
   },
 ] as const;
 
-export function GWLearnHome() {
+export function GWLearnHome({
+  awsConfiguration,
+}: {
+  awsConfiguration?: BrowserAWSConfigInput;
+}) {
   const [experience, setExperience] = useState<Experience>("student");
   const [menuOpen, setMenuOpen] = useState(false);
   const content = experiences[experience];
@@ -180,7 +185,7 @@ export function GWLearnHome() {
         </div>
       </section>
 
-      <UploadWorkspace />
+      <UploadWorkspace configurationInput={awsConfiguration} />
 
       <section className="workspace-section" id="workspace">
         <div className="section-heading">
